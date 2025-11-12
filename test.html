@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test Bencode (Browser Global)</title>
-  <!-- This is the correct CDN for browser use -->
-  <script src="https://unpkg.com/bencode@2.1.3/dist/bencode.min.js"></script>
+  <title>Test js-bencode</title>
+  <script src="https://cdn.jsdelivr.net/npm/js-bencode@1.0.2/lib/bencode.min.js"></script>
 </head>
 <body>
-  <h2>Test Bencode</h2>
-  <button onclick="testBencode()">Test Bencode</button>
+  <button onclick="testBencode()">Test js-bencode</button>
   <script>
     function testBencode() {
-      // Should log: { foo: 'bar' }
       const original = {foo: "bar"};
-      const encoded = bencode.encode(original);
-      const decoded = bencode.decode(encoded);
-      console.log("Original:", original);
+      const encoded = Bencode.encode(original);
+      const decoded = Bencode.decode(encoded);
+      console.log("Original object:", original);
       console.log("Encoded:", encoded);
-      console.log("Decoded:", decoded);
+      console.log("Decoded back:", decoded);
     }
   </script>
 </body>
