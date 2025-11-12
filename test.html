@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test js-bencode</title>
-  <script src="https://cdn.jsdelivr.net/npm/js-bencode@1.0.2/lib/bencode.min.js"></script>
+  <title>Test bencode-js (Bittorrent Fork)</title>
+  <script src="https://cdn.jsdelivr.net/npm/bencode-js@1.0.3/bencode.js"></script>
 </head>
 <body>
-  <button onclick="testBencode()">Test js-bencode</button>
+  <button onclick="testBencode()">Test bencode-js</button>
   <script>
     function testBencode() {
-      const original = {foo: "bar"};
-      const encoded = Bencode.encode(original);
-      const decoded = Bencode.decode(encoded);
-      console.log("Original object:", original);
+      const original = {foo: Buffer.from("bar")};
+      const encoded = bencode.encode(original);
+      const decoded = bencode.decode(encoded);
+      // Decoded values may be Buffer objects, convert to strings for display
+      console.log("Original:", original);
       console.log("Encoded:", encoded);
-      console.log("Decoded back:", decoded);
+      console.log("Decoded:", decoded);
+      if (decoded.foo) {
+        console.log("Decoded .foo as string:", decoded.foo.toString());
+      }
     }
   </script>
 </body>
