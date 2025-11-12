@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Bencode</title>
+  <script src="https://cdn.jsdelivr.net/npm/bencode@2.1.3/lib/bencode.min.js"></script>
+</head>
+<body>
+  <button onclick="testBencode()">Test Bencode</button>
+  <script>
+    function testBencode() {
+      // Should log: { foo: 'bar' }
+      const data = bencode.decode(bencode.encode({foo: "bar"}));
+      console.log(data);
+    }
+  </script>
+</body>
+</html>
