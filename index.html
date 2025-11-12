@@ -9,7 +9,8 @@
   <input type="text" id="user" placeholder="Username (if needed)">
   <input type="password" id="pass" placeholder="Password (if needed)"><br><br>
   <button onclick="convertTorrent()">Convert & Download Magnet</button>
-  <script src="https://unpkg.com/bencode@2.1.3/lib/bencode.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bencode@2.1.3/lib/bencode.min.js"></script>
+
   <script>
     async function convertTorrent() {
       const url = document.getElementById('torrentUrl').value.trim();
@@ -44,18 +45,18 @@
         if (torrent['announce-list']) {
           trackers = trackers.concat(torrent['announce-list'].flat().map(tr => typeof tr === 'string' ? tr : new TextDecoder().decode(tr)));
         }
+
+        // Build magnet link
         let magnet = `magnet:?xt=urn:btih:${infoHash}`;
         magnet += `&dn=${encodeURIComponent(name)}`;
         trackers.forEach(tr => {
           if (tr) magnet += `&tr=${encodeURIComponent(tr)}`;
         });
-        const blob = new Blob([magnet], {type: "text/plain"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `${name}.magnet`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+
+      // Echo the magnet link to the console instead of downloading it
+      console.log("Generated magnet link:", magnet);
+
+     
       } catch (e) {
         alert("Error: " + e);
       }
