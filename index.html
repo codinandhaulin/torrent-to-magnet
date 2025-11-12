@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>.torrent to Magnet Generator</title>
+</head>
+<body>
+  <h1>.torrent to Magnet File Converter</h1>
+  <input type="text" id="torrentUrl" placeholder="Paste .torrent file URL here" style="width: 400px;">
+  <button onclick="convertTorrent()">Convert & Download Magnet</button>
+  <script src="https://unpkg.com/bencode@2.1.3/lib/bencode.js"></script>
+  <script>
+    async function convertTorrent() {
+      const url = document.getElementById('torrentUrl').value.trim();
+      if (!url) return alert("Please enter a .torrent file URL!");
+
+      try {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const torrent = bencode.decode(new Uint8Array(arrayBuffer));
+
+        // Get info dict and SHA1 hash
+        const info = torrent.info;
+        const infoEncoded = bencode.encode(info);
+        const infoHashBuffer = await crypto.subtle.digest('SHA-1', infoEncoded);
+        const infoHash = Array.from(new Uint8Array(infoHashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+        // Get display name
+        const name = info['name'] ? (typeof info['name'] === 'string' ? info['name'] : new TextDecoder().decode(info['name'])) : "magnet";
+
+        // Get trackers
+        let trackers = [];
+        if (torrent['announce']) {
+          trackers.push(typeof torrent['announce'] === 'string' ? torrent['announce'] : new TextDecoder().decode(torrent['announce']));
+        }
+        if (torrent['announce-list']) {
+          trackers = trackers.concat(torrent['announce-list'].flat().map(tr => typeof tr === 'string' ? tr : new TextDecoder().decode(tr)));
+        }
+
+        // Build magnet link
+        let magnet = `magnet:?xt=urn:btih:${infoHash}`;
+        magnet += `&dn=${encodeURIComponent(name)}`;
+        trackers.forEach(tr => {
+          if (tr) magnet += `&tr=${encodeURIComponent(tr)}`;
+        });
+
+        // Download magnet file
+        const blob = new Blob([magnet], {type: "text/plain"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${name}.magnet`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (e) {
+        alert("Error: " + e);
+      }
+    }
+  </script>
+</body>
+</html>
