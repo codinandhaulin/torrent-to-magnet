@@ -30,6 +30,10 @@ app.get('/fetch-torrent', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send(`Hello World from port: ${port}!`)
+})
+
 app.listen(port, () => {
   console.log(`Backend server listening at http://localhost:${port}`);
 });
