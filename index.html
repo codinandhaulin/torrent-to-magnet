@@ -28,6 +28,7 @@
 
       try {
         const response = await fetch(`${backend}?${params.toString()}`);
+        console.log(`response from web service: ${response}`)
         if (!response.ok) throw new Error("Failed to fetch torrent (" + response.status + ")");
         const arrayBuffer = await response.arrayBuffer();
         const torrent = bencode.decode(new Uint8Array(arrayBuffer));
