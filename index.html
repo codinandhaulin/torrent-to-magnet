@@ -18,14 +18,18 @@
 
       if (!url) return alert("Please enter a .torrent file URL!");
 
+      // Change this to your preferred proxy
+      const proxy = "https://corsproxy.io/?";
+      const fetchUrl = proxy + encodeURIComponent(url);
+
       let headers = {};
       if (user && pass) {
-        const auth = btoa(user + ':' + pass); // base64 encode
+        const auth = btoa(user + ':' + pass);
         headers['Authorization'] = 'Basic ' + auth;
       }
 
       try {
-        const response = await fetch(url, { headers });
+        const response = await fetch(fetchUrl, { headers });
         if (!response.ok) throw new Error("Failed to fetch torrent (" + response.status + ")");
 
         const arrayBuffer = await response.arrayBuffer();
