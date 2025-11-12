@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/bencode@2.1.3/lib/bencode.min.js"></script>
   <title>.torrent to Magnet Generator</title>
 </head>
 <body>
@@ -9,7 +10,6 @@
   <input type="text" id="user" placeholder="Username (if needed)">
   <input type="password" id="pass" placeholder="Password (if needed)"><br><br>
   <button onclick="convertTorrent()">Convert & Download Magnet</button>
-  <script src="https://cdn.jsdelivr.net/npm/bencode@2.1.3/lib/bencode.min.js"></script>
 
   <script>
     async function convertTorrent() {
