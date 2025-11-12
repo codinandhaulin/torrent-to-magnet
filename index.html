@@ -15,36 +15,27 @@
       const url = document.getElementById('torrentUrl').value.trim();
       const user = document.getElementById('user').value;
       const pass = document.getElementById('pass').value;
-
       if (!url) return alert("Please enter a .torrent file URL!");
 
-      // Change this to your preferred proxy
-      const proxy = "https://corsproxy.io/?";
-      const fetchUrl = proxy + encodeURIComponent(url);
-
-      let headers = {};
-      if (user && pass) {
-        const auth = btoa(user + ':' + pass);
-        headers['Authorization'] = 'Basic ' + auth;
-      }
+      // Point to your backend (use localhost for testing, or deployed service URL)
+      const backend = 'http://localhost:3000/fetch-torrent';
+      const params = new URLSearchParams();
+      params.append('url', url);
+      if (user) params.append('user', user);
+      if (pass) params.append('pass', pass);
 
       try {
-        const response = await fetch(fetchUrl, { headers });
+        const response = await fetch(`${backend}?${params.toString()}`);
         if (!response.ok) throw new Error("Failed to fetch torrent (" + response.status + ")");
-
         const arrayBuffer = await response.arrayBuffer();
         const torrent = bencode.decode(new Uint8Array(arrayBuffer));
 
-        // Get info dict and SHA1 hash
+        // ... (rest of magnet creation and download code remains unchanged)
         const info = torrent.info;
         const infoEncoded = bencode.encode(info);
         const infoHashBuffer = await crypto.subtle.digest('SHA-1', infoEncoded);
         const infoHash = Array.from(new Uint8Array(infoHashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-
-        // Get display name
         const name = info['name'] ? (typeof info['name'] === 'string' ? info['name'] : new TextDecoder().decode(info['name'])) : "magnet";
-
-        // Get trackers
         let trackers = [];
         if (torrent['announce']) {
           trackers.push(typeof torrent['announce'] === 'string' ? torrent['announce'] : new TextDecoder().decode(torrent['announce']));
@@ -52,15 +43,11 @@
         if (torrent['announce-list']) {
           trackers = trackers.concat(torrent['announce-list'].flat().map(tr => typeof tr === 'string' ? tr : new TextDecoder().decode(tr)));
         }
-
-        // Build magnet link
         let magnet = `magnet:?xt=urn:btih:${infoHash}`;
         magnet += `&dn=${encodeURIComponent(name)}`;
         trackers.forEach(tr => {
           if (tr) magnet += `&tr=${encodeURIComponent(tr)}`;
         });
-
-        // Download magnet file
         const blob = new Blob([magnet], {type: "text/plain"});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
