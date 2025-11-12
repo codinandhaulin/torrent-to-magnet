@@ -18,7 +18,8 @@
       if (!url) return alert("Please enter a .torrent file URL!");
 
       // Point to your backend (use localhost for testing, or deployed service URL)
-      const backend = 'http://localhost:3000/fetch-torrent';
+      const backend = 'https://torrent-to-magnet-1.onrender.com//fetch-torrent';
+
       const params = new URLSearchParams();
       params.append('url', url);
       if (user) params.append('user', user);
